@@ -43,7 +43,7 @@ pipeline {
               withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'd163a75c-19e6-4c5c-afa0-7d15ec1cdf73']]) {
               script {
                 def ec2Ip = bat(
-                    script: """aws cloudformation describe-stacks --region us-east-1 --stack-name MyWebStack --query "Stacks[0].Outputs[?OutputKey==\\`PublicIP\\`].OutputValue" --output text""",
+                    script: """aws cloudformation describe-stacks --region us-east-1 --stack-name MyWebStack --query "Stacks[0].Outputs[?OutputKey=='PublicIP'].OutputValue" --output text""",
                     returnStdout: true
                 ).trim()
                 env.EC2_PUBLIC_IP = ec2Ip
