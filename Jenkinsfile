@@ -24,16 +24,7 @@ pipeline {
                }
          }
 
-        stage('AWS Identity Check') {
-            steps {
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
-                    sh 'aws sts get-caller-identity --region us-east-1'
-                }
-            }
-        }
-
-
-        stage('Provision EC2') {
+       stage('Provision EC2') {
             steps {
                 sh 'aws cloudformation create-stack --stack-name MyWebStack --template-body file://ec2.yaml --parameters ParameterKey=KeyName,ParameterValue=jnk-demo'
             }
