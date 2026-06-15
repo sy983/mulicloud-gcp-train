@@ -22,6 +22,7 @@ pipeline {
                     sh 'aws sts get-caller-identity --region us-east-1'
                 }
             }
+        }
 
 
         stage('Provision EC2') {
