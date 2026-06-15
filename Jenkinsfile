@@ -54,13 +54,18 @@ pipeline {
         }
         
       stage('Deploy index.html') {
-          steps {
-          bat """
-           scp -i %KEY_PATH% index.html ec2-user@${env.EC2_PUBLIC_IP}:/tmp/index.html
-           ssh -i %KEY_PATH% ec2-user@${env.EC2_PUBLIC_IP} "sudo mv /tmp/index.html /var/www/html/index.html && sudo systemctl restart httpd"
-           """
-                }
-           }
+           steps {
+           script {
+            def ip = env.EC2_PUBLIC_IP
+            bat """
+            scp -i %KEY_PATH% index.html ec2-user@${ip}:/tmp/index.html
+            ssh -i %KEY_PATH% ec2-user@${ip} "sudo mv /tmp/index.html /var/www/html/index.html && sudo systemctl restart httpd"
+            """
+                 }
+               }
+          }
 
+        
+     
       }
    }
