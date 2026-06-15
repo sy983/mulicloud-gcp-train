@@ -40,7 +40,7 @@ pipeline {
                 }
         stage('Get EC2 IP') {
             steps {
-              withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
+              withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'd163a75c-19e6-4c5c-afa0-7d15ec1cdf73']]) {
               bat '''
               set INSTANCE_ID=aws cloudformation describe-stack-resources --region us-east-1 --stack-name MyWebStack --query "StackResources[?ResourceType=='AWS::EC2::Instance'].PhysicalResourceId" --output text
               aws ec2 describe-instances --region us-east-1 --instance-ids %INSTANCE_ID% --query "Reservations[0].Instances[0].PublicIpAddress" --output text
