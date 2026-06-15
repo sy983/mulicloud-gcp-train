@@ -32,7 +32,7 @@ pipeline {
 
        stage('Provision EC2') {
             steps {
-                bat 'aws cloudformation create-stack --stack-name MyWebStack --template-body file://ec2.yaml --parameters ParameterKey=KeyName,ParameterValue=jnk-demo'
+                bat 'aws cloudformation create-stack --stack-name MyWebStack --template-body file://ec2.yml --parameters ParameterKey=KeyName,ParameterValue=jnk-demo'
             }
         }
         stage('Get EC2 IP') {
