@@ -35,6 +35,7 @@ pipeline {
                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
                bat 'aws cloudformation create-stack --region us-east-1 --stack-name MyWebStack --template-body file://ec2.yml --parameters ParameterKey=KeyName,ParameterValue=jnk-demo'
              }
+           }
          }
         stage('Get EC2 IP') {
             steps {
