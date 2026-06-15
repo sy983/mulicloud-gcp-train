@@ -4,6 +4,13 @@ pipeline {
         KEY_PATH = "C:/Users/admin/.ssh/jnk-demo.pem"
     }
     stages {
+
+        stage('Clone Repo') {
+           steps {
+               git branch: 'main', url: 'https://github.com/your-username/your-repo.git'
+               }
+          }
+
         stage('Provision EC2') {
             steps {
                 sh 'aws cloudformation create-stack --stack-name MyWebStack --template-body file://ec2.yaml --parameters ParameterKey=KeyName,ParameterValue=jnk-demo'
