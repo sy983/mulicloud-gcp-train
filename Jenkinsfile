@@ -20,19 +20,19 @@ pipeline {
            stage('AWS Identity Check') {
             steps {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'd163a75c-19e6-4c5c-afa0-7d15ec1cdf73']]) {
-                    sh 'aws sts get-caller-identity --region us-east-1'
+                    bat 'aws sts get-caller-identity --region us-east-1'
                 }
             }
         }
         stage('Set AWS Region') {
            steps {
-               sh 'aws configure set region us-east-1'
+               bat 'aws configure set region us-east-1'
                }
          }
 
        stage('Provision EC2') {
             steps {
-                sh 'aws cloudformation create-stack --stack-name MyWebStack --template-body file://ec2.yaml --parameters ParameterKey=KeyName,ParameterValue=jnk-demo'
+                bat 'aws cloudformation create-stack --stack-name MyWebStack --template-body file://ec2.yaml --parameters ParameterKey=KeyName,ParameterValue=jnk-demo'
             }
         }
         stage('Get EC2 IP') {
