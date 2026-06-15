@@ -62,6 +62,9 @@ Resources:
           systemctl enable httpd
           systemctl start docker
           systemctl enable docker
+          git clone https://github.com/sy983/mulicloud-gcp-train.git
+          cp mulicloud-gcp-train/index.html /var/www/html/index.html
+           systemctl restart httpd
          
 
 Outputs:
