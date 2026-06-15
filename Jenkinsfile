@@ -10,6 +10,14 @@ pipeline {
                git branch: 'main', url: 'https://github.com/sy983/mulicloud-gcp-train.git'
                }
           }
+
+           stage('AWS Identity Check') {
+            steps {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
+                    sh 'aws sts get-caller-identity --region us-east-1'
+                }
+            }
+        }
         stage('Set AWS Region') {
            steps {
                sh 'aws configure set region us-east-1'
