@@ -26,11 +26,7 @@ pipeline {
                 }
             }
         }
-        stage('Clone Repo') {
-            steps {
-                git branch: 'main', url: 'https://github.com/sy983/mulicloud-gcp-train.git'
-            }
-        }
+        
         stage('Deploy index.html') {
             steps {
                 sh '''
