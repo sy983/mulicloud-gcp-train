@@ -32,7 +32,7 @@ pipeline {
 
         stage('Provision EC2') {
            steps {
-               withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
+               withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'd163a75c-19e6-4c5c-afa0-7d15ec1cdf73']]) {
                bat 'aws cloudformation create-stack --region us-east-1 --stack-name MyWebStack --template-body file://ec2.yml --parameters ParameterKey=KeyName,ParameterValue=jnk-demo'
              }
            }
