@@ -39,24 +39,23 @@ pipeline {
                     }
                 }
         stage('Get EC2 IP') {
-            steps {
+          steps {
               withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'd163a75c-19e6-4c5c-afa0-7d15ec1cdf73']]) {
-              bat '''
-              set INSTANCE_ID=aws cloudformation describe-stack-resources --region us-east-1 --stack-name MyWebStack --query "StackResources[?ResourceType=='AWS::EC2::Instance'].PhysicalResourceId" --output text
-              aws ec2 describe-instances --region us-east-1 --instance-ids %INSTANCE_ID% --query "Reservations[0].Instances[0].PublicIpAddress" --output text
-             '''
-        }
-    }
-}
-      
-        
-        stage('Deploy index.html') {
-            steps {
-                sh '''
-                scp -i ${KEY_PATH} index.html ec2-user@${EC2_PUBLIC_IP}:/tmp/index.html
-                ssh -i ${KEY_PATH} ec2-user@${EC2_PUBLIC_IP} "sudo mv /tmp/index.html /var/www/html/index.html && sudo systemctl restart httpd"
-                '''
+              bat 'aws cloudformation describe-stacks --region us-east-1 --stack-name MyWebStack --query "Stacks[0].Outputs[?OutputKey=='PublicIP'].OutputValue"  --output text'
+                  }
+                }
             }
-        }
-    }
-}
+        stage('Deploy index.html') {
+          steps {
+            withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'd163a75c-19e6-4c5c-afa0-7d15ec1cdf73']]) {
+            bat '''
+            REM Copy index.html to EC2
+            scp -i %KEY_PATH% index.html ec2-user@%EC2_PUBLIC_IP%:/tmp/index.html
+            REM Move file into web root and restart Apache
+            ssh -i %KEY_PATH% ec2-user@%EC2_PUBLIC_IP% "sudo mv /tmp/index.html /var/www/html/index.html && sudo systemctl restart httpd"
+            '''
+               }
+           }
+         }
+      }
+   }
