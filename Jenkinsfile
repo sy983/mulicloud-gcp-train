@@ -42,12 +42,11 @@ pipeline {
       stage('Get EC2 IP') {
            steps {
               withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'd163a75c-19e6-4c5c-afa0-7d15ec1cdf73']]) {
-             script {
-                // Run AWS CLI and write to a file in the workspace
-                bat """aws cloudformation describe-stacks --region us-east-1 --stack-name MyWebStack --query "Stacks[0].Outputs[?OutputKey=='PublicIP'].OutputValue" --output text > %WORKSPACE%\\ip.txt"""
-
-                // Read the file back into Groovy
-                def ec2Ip = readFile("${env.WORKSPACE}\\ip.txt").trim()
+              script {
+                def ec2Ip = powershell(
+                    script: 'aws cloudformation describe-stacks --region us-east-1 --stack-name MyWebStack --query "Stacks[0].Outputs[?OutputKey==\'PublicIP\'].OutputValue" --output text',
+                    returnStdout: true
+                ).trim()
                 env.EC2_PUBLIC_IP = ec2Ip
                 echo "Captured EC2 Public IP: ${env.EC2_PUBLIC_IP}"
             }
