@@ -34,19 +34,21 @@ pipeline {
            steps {
                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'd163a75c-19e6-4c5c-afa0-7d15ec1cdf73']]) {
                bat 'aws cloudformation create-stack --region us-east-1 --stack-name MyWebStack --template-body file://ec2.yml --capabilities CAPABILITY_IAM --parameters ParameterKey=KeyName,ParameterValue=jnk-demo'
-             }
-           }
-         }
+               bat 'aws cloudformation wait stack-create-complete --region us-east-1 --stack-name MyWebStack'    
+                       }
+                    }
+                }
         stage('Get EC2 IP') {
             steps {
-                script {
-                    env.EC2_PUBLIC_IP = sh(
-                        script: "aws cloudformation describe-stacks --stack-name MyWebStack --query 'Stacks[0].Outputs[?OutputKey==`PublicIP`].OutputValue' --output text",
-                        returnStdout: true
-                    ).trim()
-                }
-            }
+              withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
+              bat '''
+              set INSTANCE_ID=aws cloudformation describe-stack-resources --region us-east-1 --stack-name MyWebStack --query "StackResources[?ResourceType=='AWS::EC2::Instance'].PhysicalResourceId" --output text
+              aws ec2 describe-instances --region us-east-1 --instance-ids %INSTANCE_ID% --query "Reservations[0].Instances[0].PublicIpAddress" --output text
+             '''
         }
+    }
+}
+      
         
         stage('Deploy index.html') {
             steps {
