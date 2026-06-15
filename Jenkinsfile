@@ -2,7 +2,8 @@ pipeline {
     agent any
     environment {
         KEY_PATH = "C:/Users/admin/.ssh/jnk-demo.pem"
-    }
+        EC2_PUBLIC_IP = ''
+      }
     stages {
 
         stage('Clone Repo') {
@@ -38,29 +39,32 @@ pipeline {
                        }
                     }
                 }
-       stage('Get EC2 IP') {
-          steps {
-              withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'd163a75c-19e6-4c5c-afa0-7d15ec1cdf73']]) {
-              script {
-              def ec2Ip = bat(
-              script: """aws cloudformation describe-stacks --region us-east-1 --stack-name MyWebStack --query "Stacks[0].Outputs[?OutputKey=='PublicIP'].OutputValue" --output text""",
-              returnStdout: true
-             ).trim()
-             env.put("EC2_PUBLIC_IP", ec2Ip)
-             echo "Captured EC2 Public IP: ${env.EC2_PUBLIC_IP}"
-                  }
-             }
-          }
-        }
-        
-       stage('Deploy index.html') {
-        steps {
-        bat """
-        scp -i %KEY_PATH% index.html ec2-user@${env.EC2_PUBLIC_IP}:/tmp/index.html
-        ssh -i %KEY_PATH% ec2-user@${env.EC2_PUBLIC_IP} "sudo mv /tmp/index.html /var/www/html/index.html && sudo systemctl restart httpd"
-        """
+          stage('Get EC2 IP') {
+            steps {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'd163a75c-19e6-4c5c-afa0-7d15ec1cdf73']]) {
+                    script {
+                        def ec2Ip = bat(
+                            script: """aws cloudformation describe-stacks --region us-east-1 --stack-name MyWebStack --query "Stacks[0].Outputs[?OutputKey=='PublicIP'].OutputValue" --output text""",
+                            returnStdout: true
+                        ).trim()
+                        // Safe assignment because EC2_PUBLIC_IP was declared in environment
+                        env.EC2_PUBLIC_IP = ec2Ip
+                        echo "Captured EC2 Public IP: ${env.EC2_PUBLIC_IP}"
+                    }
                 }
             }
-    
-      }
-   }
+        }
+
+        stage('Deploy index.html') {
+            steps {
+                bat """
+                scp -i %KEY_PATH% index.html ec2-user@${env.EC2_PUBLIC_IP}:/tmp/index.html
+                ssh -i %KEY_PATH% ec2-user@${env.EC2_PUBLIC_IP} "sudo mv /tmp/index.html /var/www/html/index.html && sudo systemctl restart httpd"
+                """
+            }
+        }
+    }
+}
+
+        
+ 
