@@ -16,6 +16,13 @@ pipeline {
                }
          }
 
+        stage('AWS Identity Check') {
+            steps {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
+                    sh 'aws sts get-caller-identity --region us-east-1'
+                }
+            }
+
 
         stage('Provision EC2') {
             steps {
