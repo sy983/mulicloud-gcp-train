@@ -39,21 +39,24 @@ pipeline {
                        }
                     }
                 }
-       stage('Get EC2 IP') {
-    steps {
-        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'd163a75c-19e6-4c5c-afa0-7d15ec1cdf73']]) {
-            script {
-                def ec2Ip = bat(
-                    script: """@echo off
-                               for /f %%i in ('aws cloudformation describe-stacks --region us-east-1 --stack-name MyWebStack --query "Stacks[0].Outputs[?OutputKey=='PublicIP'].OutputValue" --output text') do echo %%i""",
-                    returnStdout: true
-                ).trim()
+      stage('Get EC2 IP') {
+           steps {
+              withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'd163a75c-19e6-4c5c-afa0-7d15ec1cdf73']]) {
+               script {
+                // Write the AWS CLI output to a temp file
+                bat """
+                aws cloudformation describe-stacks --region us-east-1 --stack-name MyWebStack --query "Stacks[0].Outputs[?OutputKey=='PublicIP'].OutputValue" --output text > ip.txt
+                """
+
+                // Read the file back into Groovy
+                def ec2Ip = readFile('ip.txt').trim()
                 env.EC2_PUBLIC_IP = ec2Ip
                 echo "Captured EC2 Public IP: ${env.EC2_PUBLIC_IP}"
             }
         }
     }
 }
+
 
         stage('Deploy index.html') {
             steps {
