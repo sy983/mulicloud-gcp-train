@@ -12,7 +12,7 @@ pipeline {
           }
         stage('chk aws cli') {
           steps {
-             sh 'aws --version'
+             bat 'aws --version'
                 }
            }
 
