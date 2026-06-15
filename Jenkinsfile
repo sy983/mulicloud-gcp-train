@@ -10,14 +10,13 @@ pipeline {
                git branch: 'main', url: 'https://github.com/sy983/mulicloud-gcp-train.git'
                }
           }
-
         stage('chk aws cli') {
-           steps {
-               sh aws --version 
-               }
-          }
+          steps {
+             sh 'aws --version'
+                }
+           }
 
-        aws --version
+  
            stage('AWS Identity Check') {
             steps {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'd163a75c-19e6-4c5c-afa0-7d15ec1cdf73']]) {
