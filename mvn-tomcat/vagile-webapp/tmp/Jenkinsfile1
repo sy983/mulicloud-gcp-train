@@ -1,0 +1,21 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/vagile-devsecops/vagile-webapp.git'
+            }
+        }
+        stage('build') {
+            steps {
+                bat 'mvn clean package'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                bat 'mvn deploy'
+            }
+        }
+    }
+}
