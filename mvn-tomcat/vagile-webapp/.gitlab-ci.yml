@@ -1,0 +1,29 @@
+#######
+stages:
+    - build
+    - test
+    - deploy
+    - notify
+
+android:
+    stage: build
+    script:
+        - echo "Building Android app..."
+
+ios:
+    stage: build 
+    script:
+        - echo "Building iOS app..."
+
+macos:
+    stage: build
+    script:
+        - echo "Building macOS app..."
+notify:
+  stage: notify
+  when: on_failure
+  script:
+    - |
+      curl -X POST -H "Content-Type: application/json" \
+      --data "{\"text\":\"pipeline failed🚀 ${CI_PROJECT_NAME}\nPipeline #${CI_PIPELINE_ID}\nStatus: ${CI_PIPELINE_STATUS}\"}" \
+      ${SLACK_WEBHOOK_URL}
