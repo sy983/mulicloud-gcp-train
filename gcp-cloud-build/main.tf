@@ -1,20 +1,24 @@
 terraform {
   required_version = ">= 1.5.0"
-
   required_providers {
     google = {
       source  = "hashicorp/google"
       version = "~> 6.0"
     }
-  }
+
+  backend "gcs" {
+    bucket = "my-terraform-state-bucket"
+    prefix = "compute/vm"
+     }
+   }
 }
 
 # Update these values
 locals {
-  project_id  = "my-gcp-project"
-  region      = "asia-south1"
-  zone        = "asia-south1-a"
-  vm_name     = "terraform-vm"
+  project_id  = "cp-practice-proj1"
+  region      = "us-central1"
+  zone        = "us-central1-a"
+  vm_name     = "terraform-cloud-build-vm"
   machine_type = "e2-medium"
 }
 
@@ -47,14 +51,7 @@ resource "google_compute_instance" "vm" {
     }
   }
 
-  metadata_startup_script = <<-EOT
-    #!/bin/bash
-    apt-get update
-    apt-get install -y nginx
-    systemctl enable nginx
-    systemctl start nginx
-  EOT
-
+ 
   labels = {
     environment = "dev"
     managed_by  = "terraform"
