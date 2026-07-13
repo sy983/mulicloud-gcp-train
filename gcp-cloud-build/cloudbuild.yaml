@@ -1,37 +1,41 @@
 steps:
-  - name: hashicorp/terraform:latest
-    id: Terraform Init
+  - id: Terraform Init
+    name: hashicorp/terraform:latest
     entrypoint: sh
     args:
       - -c
       - |
         terraform init
 
-  - name: hashicorp/terraform:latest
-    id: Terraform Plan
+  - id: Terraform Execute
+    name: hashicorp/terraform:latest
     entrypoint: sh
     args:
       - -c
       - |
-        terraform plan \
-          -var="project_id=$PROJECT_ID" \
-          -var="region=${_REGION}" \
-          -var="zone=${_ZONE}" \
-          -var="vm_name=${_VM_NAME}" \
-          -out=tfplan
+        if [ "${_TF_ACTION}" = "destroy" ]; then
 
-  - name: hashicorp/terraform:latest
-    id: Terraform Apply
-    entrypoint: sh
-    args:
-      - -c
-      - |
-        terraform apply -auto-approve tfplan
+          if [ "${_CONFIRM_DESTROY}" != "YES" ]; then
+            echo "ERROR: Destroy blocked."
+            echo "To destroy, set:"
+            echo "_TF_ACTION=destroy"
+            echo "_CONFIRM_DESTROY=YES"
+            exit 1
+          fi
+
+          echo "Starting Terraform Destroy..."
+          terraform destroy -auto-approve
+
+        else
+
+          echo "Starting Terraform Apply..."
+          terraform apply -auto-approve
+
+        fi
 
 substitutions:
-  _REGION: asia-south1
-  _ZONE: asia-south1-a
-  _VM_NAME: terraform-vm
+  _TF_ACTION: "apply"
+  _CONFIRM_DESTROY: "NO"
 
 options:
   logging: CLOUD_LOGGING_ONLY
