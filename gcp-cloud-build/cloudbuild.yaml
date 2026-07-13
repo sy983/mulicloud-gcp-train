@@ -1,0 +1,39 @@
+steps:
+  - name: hashicorp/terraform:latest
+    id: Terraform Init
+    entrypoint: sh
+    args:
+      - -c
+      - |
+        terraform init
+
+  - name: hashicorp/terraform:latest
+    id: Terraform Plan
+    entrypoint: sh
+    args:
+      - -c
+      - |
+        terraform plan \
+          -var="project_id=$PROJECT_ID" \
+          -var="region=${_REGION}" \
+          -var="zone=${_ZONE}" \
+          -var="vm_name=${_VM_NAME}" \
+          -out=tfplan
+
+  - name: hashicorp/terraform:latest
+    id: Terraform Apply
+    entrypoint: sh
+    args:
+      - -c
+      - |
+        terraform apply -auto-approve tfplan
+
+substitutions:
+  _REGION: asia-south1
+  _ZONE: asia-south1-a
+  _VM_NAME: terraform-vm
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+timeout: "1800s"
