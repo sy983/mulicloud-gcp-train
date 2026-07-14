@@ -1,16 +1,15 @@
 terraform {
   required_version = ">= 1.5.0"
-backend "gcs" {
-    bucket = "sy-gcp-tf"
-    prefix = "compute/vm"
-     }
   required_providers {
     google = {
       source  = "hashicorp/google"
       version = "~> 6.0"
+        }
+      }
+backend "gcs" {
+    bucket = "sy-gcp-tf"
+    prefix = "compute/vm"
     }
- 
-   }
 }
 
 # Update these values
