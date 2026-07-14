@@ -34,8 +34,8 @@ steps:
         fi
 
 substitutions:
-  _TF_ACTION: "apply"
-  _CONFIRM_DESTROY: "NO"
+  _TF_ACTION: "destroy"
+  _CONFIRM_DESTROY: "YES"
 
 options:
   logging: CLOUD_LOGGING_ONLY
