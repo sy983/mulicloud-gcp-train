@@ -17,7 +17,7 @@ locals {
   project_id  = "gcp-practice-proj1"
   region      = "us-central1"
   zone        = "us-central1-a"
-  vm_name     = "terraform-cloud-build-vm"
+  vm_name     = "tf-vm-cb"
   machine_type = "e2-medium"
 }
 
