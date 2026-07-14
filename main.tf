@@ -14,7 +14,7 @@ backend "gcs" {
 
 # Update these values
 locals {
-  project_id  = "cp-practice-proj1"
+  project_id  = "gcp-practice-proj1"
   region      = "us-central1"
   zone        = "us-central1-a"
   vm_name     = "terraform-cloud-build-vm"
